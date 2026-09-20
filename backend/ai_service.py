@@ -5,7 +5,7 @@ from google import genai
 
 load_dotenv()
 
-api_key = os.getenv("b6c85a50616eadc71fb09130386df641")
+api_key = os.getenv("AQ.Ab8RN6J2nehkIUNd4tMEFQJ9OCPGvSgDw7GWdnjKu5svJZa6EQ")
 
 client = genai.Client(api_key=api_key)
 
