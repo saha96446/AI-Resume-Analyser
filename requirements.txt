@@ -4,3 +4,4 @@ python-multipart
 pypdf
 PyMuPDF
 python-dotenv
+google-genai
