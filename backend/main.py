@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 
 from backend.resume_parser import extract_text_from_pdf
-from ai_service import analyze_resume
+from backend.ai_service import analyze_resume
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="AI Resume Analyzer")
