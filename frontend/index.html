@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/styles.css">
+
+</head>
+
+<body>
+
+    <header class="header">
+        <nav class="top-nav">
+            <a class="brand" href="/">Career<span>Lens</span></a>
+            <div class="nav-links">
+                <a href="/static/how-it-works.html">How it works</a>
+                <a href="#result">Your report</a>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <p class="eyebrow">AI-POWERED CAREER INTELLIGENCE</p>
+            <h1>Turn your resume into your next opportunity.</h1>
+            <p>Get a clear resume score, practical improvement tips, and job matches tailored to your experience.</p>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="upload-card" id="how-it-works">
+
+            <p class="card-kicker">FREE RESUME REVIEW</p>
+            <h2>See what your resume can do.</h2>
+
+            <p style="margin-top:10px;color:#64748b;">
+                Upload your PDF resume and let AI analyze your skills,
+                experience and career profile.
+            </p>
+
+            <div class="feature-pills">
+                <span>✓ AI-powered feedback</span>
+                <span>✓ Job-match recommendations</span>
+                <span>✓ Private analysis</span>
+            </div>
+
+            <div class="upload-box">
+
+                <h2>📄 Upload Resume</h2>
+
+                <p>Select your PDF resume</p>
+
+                <label for="resumeFile" class="upload-button">
+                    📄 Choose Resume PDF
+                </label>
+
+                <input id="resumeFile" type="file" name="resumeFile" accept="application/pdf" hidden>
+
+                <div id="selectedFile" class="selected-file" role="status" aria-live="polite">
+                    <span class="selected-file-icon">✓</span>
+                    <span id="selectedFileName"></span>
+                    <span id="selectedFileSize"></span>
+                </div>
+
+            </div>
+
+            <button class="btn" id="analyzeBtn">
+                Analyze Resume
+            </button>
+
+            <div id="loading">
+                🤖 AI is analyzing your resume...
+            </div>
+
+            <div id="error"></div>
+
+        </div>
+
+
+        <div id="result">
+
+            <div class="result-card">
+
+                <div class="result-title">
+                    AI Resume Analysis
+                </div>
+
+                <div class="score" id="score">
+                    --
+                </div>
+
+                <div class="info-grid">
+
+                    <div class="info">
+                        <strong>Candidate Name</strong>
+                        <span id="candidateName">--</span>
+                    </div>
+
+                    <div class="info">
+                        <strong>Email</strong>
+                        <span id="email">--</span>
+                    </div>
+
+                    <div class="info">
+                        <strong>Phone</strong>
+                        <span id="phone">--</span>
+                    </div>
+
+                    <div class="info">
+                        <strong>Education</strong>
+                        <span id="education">--</span>
+                    </div>
+
+                </div>
+
+
+                <div class="section">
+
+                    <h3>Skills</h3>
+
+                    <div class="tags" id="skills"></div>
+
+                </div>
+
+
+                <div class="section">
+
+                    <h3>Experience</h3>
+
+                    <ul class="list" id="experience"></ul>
+
+                </div>
+
+
+                <div class="section">
+
+                    <h3>Projects</h3>
+
+                    <ul class="list" id="projects"></ul>
+
+                </div>
+
+
+                <div class="section">
+
+                    <h3>Certifications</h3>
+
+                    <ul class="list" id="certifications"></ul>
+
+                </div>
+
+
+                <div class="section">
+
+                    <h3>AI Summary</h3>
+
+                    <p id="summary"></p>
+
+                </div>
+
+
+                <div class="section">
+
+                    <h3>Strengths</h3>
+
+                    <ul class="list" id="strengths"></ul>
+
+                </div>
+
+
+                <div class="section">
+
+                    <h3>Areas to Improve</h3>
+
+                    <ul class="list" id="weaknesses"></ul>
+
+                </div>
+
+                <div class="section">
+
+                    <h3>Recommended Job Matches</h3>
+
+                    <div class="job-matches" id="jobMatches"></div>
+
+                </div>
+
+                <div class="section improved-resume" id="improvedResumeSection">
+
+                    <div class="improved-heading">
+                        <div>
+                            <p class="improved-kicker">AI RESUME UPGRADE</p>
+                            <h3>Improved Resume Draft</h3>
+                        </div>
+                        <div class="resume-actions">
+                            <button class="copy-resume-btn" id="copyImprovedResume" type="button">
+                                Copy draft
+                            </button>
+                            <button class="download-resume-btn" id="downloadImprovedResume" type="button">
+                                Download .txt
+                            </button>
+                        </div>
+                    </div>
+
+                    <p class="improved-note">
+                        Your score is below 80, so this draft improves wording and ATS keywords using only your resume details.
+                    </p>
+
+                    <div class="improved-content">
+                        <h4>Professional Summary</h4>
+                        <p id="improvedSummary"></p>
+
+                        <h4>Target Keywords</h4>
+                        <div class="tags" id="improvedKeywords"></div>
+
+                        <h4>Experience</h4>
+                        <ul class="list" id="improvedExperience"></ul>
+
+                        <h4>Projects</h4>
+                        <ul class="list" id="improvedProjects"></ul>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const fileInput = document.getElementById("resumeFile");
+        const analyzeBtn = document.getElementById("analyzeBtn");
+        const loading = document.getElementById("loading");
+        const errorBox = document.getElementById("error");
+        const result = document.getElementById("result");
+        const selectedFile = document.getElementById("selectedFile");
+        const selectedFileName = document.getElementById("selectedFileName");
+        const selectedFileSize = document.getElementById("selectedFileSize");
+        const improvedResumeSection = document.getElementById("improvedResumeSection");
+        const copyImprovedResume = document.getElementById("copyImprovedResume");
+        const downloadImprovedResume = document.getElementById("downloadImprovedResume");
+        let improvedResumeText = "";
+
+
+        fileInput.addEventListener("change", () => {
+
+            const file = fileInput.files[0];
+
+            if (!file) {
+                selectedFile.style.display = "none";
+                return;
+            }
+
+            selectedFileName.textContent = file.name;
+            selectedFileSize.textContent = formatFileSize(file.size);
+            selectedFile.style.display = "flex";
+
+        });
+
+
+        analyzeBtn.addEventListener("click", async () => {
+
+            const file = fileInput.files[0];
+
+            errorBox.style.display = "none";
+            result.style.display = "none";
+
+            if (!file) {
+                errorBox.innerText = "Please select a PDF resume first.";
+                errorBox.style.display = "block";
+                return;
+            }
+
+            if (!file.name.toLowerCase().endsWith(".pdf")) {
+                errorBox.innerText = "Only PDF files are allowed.";
+                errorBox.style.display = "block";
+                return;
+            }
+
+            const formData = new FormData();
+
+            formData.append("file", file);
+
+            analyzeBtn.disabled = true;
+            loading.style.display = "block";
+
+            try {
+
+                const response = await fetch("/upload-resume", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail || "Resume analysis failed."
+                    );
+                }
+
+                displayResult(data.analysis);
+
+            } catch (error) {
+
+                errorBox.innerText = error.message;
+                errorBox.style.display = "block";
+
+            } finally {
+
+                analyzeBtn.disabled = false;
+                loading.style.display = "none";
+
+            }
+
+        });
+
+
+        function displayResult(data) {
+
+            result.style.display = "block";
+
+            document.getElementById("score").innerText =
+                (data.resume_score ?? 0) + "/100";
+
+            document.getElementById("candidateName").innerText =
+                data.candidate_name || "Not found";
+
+            document.getElementById("email").innerText =
+                data.email || "Not found";
+
+            document.getElementById("phone").innerText =
+                data.phone || "Not found";
+
+            document.getElementById("education").innerText =
+                Array.isArray(data.education)
+                    ? data.education.map(formatResumeValue).filter(Boolean).join(" • ")
+                    : data.education || "Not found";
+
+
+            createTags("skills", data.skills);
+
+            createList("experience", data.experience);
+
+            createList("projects", data.projects);
+
+            createList("certifications", data.certifications);
+
+            createList("strengths", data.strengths);
+
+            createList("weaknesses", data.weaknesses);
+
+            createJobMatches(data.job_matches);
+
+            displayImprovedResume(data);
+
+
+            document.getElementById("summary").innerText =
+                data.summary || "No summary available.";
+
+        }
+
+
+        function createTags(id, items) {
+
+            const element = document.getElementById(id);
+
+            element.innerHTML = "";
+
+            if (!Array.isArray(items)) {
+                return;
+            }
+
+            items.forEach(item => {
+
+                const tag = document.createElement("span");
+
+                tag.className = "tag";
+
+                tag.innerText = item;
+
+                element.appendChild(tag);
+
+            });
+
+        }
+
+
+        function createList(id, items) {
+
+            const element = document.getElementById(id);
+
+            element.innerHTML = "";
+
+            if (!Array.isArray(items)) {
+                return;
+            }
+
+            items.forEach(item => {
+
+                const li = document.createElement("li");
+
+                if (typeof item === "object") {
+                    li.className = "resume-entry";
+
+                    const title = item.role || item.title || item.name || "Details";
+                    const metaItems = [
+                        item.company,
+                        item.institution,
+                        item.duration,
+                        item.tech_stack || item.technologies
+                    ].filter(Boolean);
+
+                    const heading = document.createElement("strong");
+                    heading.textContent = title;
+                    li.appendChild(heading);
+
+                    if (metaItems.length) {
+                        const meta = document.createElement("span");
+                        meta.className = "entry-meta";
+                        meta.textContent = metaItems.map(formatResumeValue).join(" • ");
+                        li.appendChild(meta);
+                    }
+
+                    if (item.description) {
+                        const description = document.createElement("p");
+                        description.textContent = item.description;
+                        li.appendChild(description);
+                    }
+                } else {
+                    li.innerText = item;
+                }
+
+                element.appendChild(li);
+
+            });
+
+        }
+
+
+        function displayImprovedResume(data) {
+
+            const improved = data.improved_resume;
+
+            if ((data.resume_score ?? 100) >= 80 || !improved) {
+                improvedResumeSection.style.display = "none";
+                return;
+            }
+
+            improvedResumeSection.style.display = "block";
+            document.getElementById("improvedSummary").textContent =
+                improved.professional_summary || "No improved summary available.";
+            createTags("improvedKeywords", improved.ats_keywords || improved.skills);
+            createList("improvedExperience", improved.experience);
+            createList("improvedProjects", improved.projects);
+
+            improvedResumeText = buildImprovedResumeText(improved);
+
+        }
+
+
+        function buildImprovedResumeText(improved) {
+
+            const entriesToText = (entries) => (entries || []).map(entry => {
+                if (typeof entry !== "object") return String(entry);
+                const title = entry.role || entry.title || "";
+                const metadata = [entry.company, entry.duration, entry.tech_stack].filter(Boolean).join(" | ");
+                return [title, metadata, entry.description].filter(Boolean).join("\n");
+            }).join("\n\n");
+
+            return [
+                "PROFESSIONAL SUMMARY",
+                improved.professional_summary || "",
+                "\nSKILLS",
+                (improved.skills || improved.ats_keywords || []).join(", "),
+                "\nEXPERIENCE",
+                entriesToText(improved.experience),
+                "\nPROJECTS",
+                entriesToText(improved.projects)
+            ].join("\n");
+
+        }
+
+
+        copyImprovedResume.addEventListener("click", async () => {
+
+            if (!improvedResumeText) return;
+
+            try {
+                await navigator.clipboard.writeText(improvedResumeText);
+                copyImprovedResume.textContent = "Copied ✓";
+                setTimeout(() => copyImprovedResume.textContent = "Copy draft", 1800);
+            } catch (error) {
+                copyImprovedResume.textContent = "Copy failed";
+            }
+
+        });
+
+
+        downloadImprovedResume.addEventListener("click", () => {
+
+            if (!improvedResumeText) return;
+
+            const file = new Blob([improvedResumeText], {
+                type: "text/plain;charset=utf-8"
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+
+            link.href = url;
+            link.download = "improved-resume.txt";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+
+        });
+
+
+        function formatResumeValue(value) {
+
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            if (typeof value !== "object") {
+                return String(value);
+            }
+
+            if (Array.isArray(value)) {
+                return value.map(formatResumeValue).filter(Boolean).join(", ");
+            }
+
+            const preferredFields = [
+                "degree", "course", "qualification", "institution",
+                "university", "school", "year", "duration"
+            ];
+
+            const details = preferredFields
+                .filter(field => value[field])
+                .map(field => formatResumeValue(value[field]));
+
+            return (details.length ? details : Object.values(value)
+                .map(formatResumeValue)
+                .filter(Boolean)).join(" — ");
+
+        }
+
+
+        function createJobMatches(matches) {
+
+            const element = document.getElementById("jobMatches");
+
+            element.innerHTML = "";
+
+            if (!Array.isArray(matches) || matches.length === 0) {
+                element.innerHTML = "<p>No job matches available.</p>";
+                return;
+            }
+
+            matches.forEach(match => {
+
+                const card = document.createElement("article");
+                card.className = "job-match-card";
+
+                const title = document.createElement("h4");
+                title.textContent = match.title || "Recommended role";
+
+                const score = document.createElement("span");
+                score.className = "match-score";
+                score.textContent = (match.match_score ?? 0) + "% match";
+
+                const reason = document.createElement("p");
+                reason.textContent = match.why_match || "Matches your profile.";
+
+                card.append(title, score, reason);
+
+                if (Array.isArray(match.missing_skills) && match.missing_skills.length) {
+                    const missing = document.createElement("p");
+                    missing.className = "missing-skills";
+                    missing.textContent = "Skills to build: " + match.missing_skills.join(", ");
+                    card.appendChild(missing);
+                }
+
+                const jobLink = document.createElement("a");
+                jobLink.className = "linkedin-job-link";
+                jobLink.href = "https://www.linkedin.com/jobs/search/?keywords=" +
+                    encodeURIComponent(match.title || "jobs");
+                jobLink.target = "_blank";
+                jobLink.rel = "noopener noreferrer";
+                jobLink.textContent = "View jobs on LinkedIn ↗";
+                card.appendChild(jobLink);
+
+                element.appendChild(card);
+
+            });
+
+        }
+
+
+        function formatFileSize(bytes) {
+
+            if (bytes < 1024 * 1024) {
+                return Math.max(1, Math.round(bytes / 1024)) + " KB";
+            }
+
+            return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
