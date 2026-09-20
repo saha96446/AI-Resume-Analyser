@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from pathlib import Path
 
-from resume_parser import extract_text_from_pdf
+from backend.resume_parser import extract_text_from_pdf
 from ai_service import analyze_resume
 from fastapi.staticfiles import StaticFiles
 
